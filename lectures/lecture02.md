@@ -116,6 +116,56 @@ of a class.
 
 ## C++11 `std::swap` and `std::move`
 
+Given that copying large objects is expensive, C++11 allows the programmer to
+easily replace expensive copies with moves provided the object’s class supports
+moves.
+
+Take the following example of a `swap` function that swap its arguments by three
+copies:
+
+```
+void swap( vector<string> &x, vector<string> &y ) {
+    vector<string> tmp = x;
+    x = y;
+    y = tmp;
+}
+```
+
+In C++11, if the right-hand side of the assignment operator (or constructor) is
+an rvalue, then if the object supports moving, we can automatically avoid
+copies. In the example above, we know that `vector` supports moving so instead
+of copy operations we could do move operations. These could be done either
+by casting the right-hand side of an assignment to an rvalue reference or
+by using `std::move`.
+
+```
+// Using type-casting
+void swap( vector<string> &x, vector<string> &y ) {
+    vector<string> tmp = static_cast<vector<string> &&>( x );
+    x = static_cast<vector<string> &&>( y );
+    y = static_cast<vector<string> &&>( tmp );
+}
+
+// Using std::move, equivalent to casting but more succint
+void swap( vector<string> &x, vector<string> &y ) {
+    vector<string> tmp = std::move(x);
+    x = std::move(y);
+    y = std::move(tmp);
+}
+```
+
+**NOTE:**  `std::move` doesn't move anything; rather, it makes a value (either
+lvalue or rvalue) subject *to be moved*.
+
+It's worth noting that `std::swap` is already part of STL and works for any
+part:
+
+```
+vector<string> x;
+vector<string> y;
+std::swap(x, y); // x contains y's contents and y contains x's contents
+```
+
 ## The big five
 
 In C++, classes come with five special functions already written for each class.
@@ -482,7 +532,60 @@ constructing an Object with its zero-parameter constructor.
 > must be placed in a .h file**. Popular implementations of the STL follow this
 > strategy.
 
-## Matrix
+## Using matrices
+
+This will be implemented by using a vector of vectors (e.g., a vector of `int`
+vectors).
+
+```
+#ifndef MATRIX_H
+#define MATRIX_H
+
+#include <vector>
+
+template <typename Object>
+class Matrix {
+    public:
+        /*
+         * Create _array as having rows entries each of type vector<Object>.
+         * We have a rows zero-length vectors of Object so each row is resized
+         * to have cols columns. Thus this creates a two-dimensional array.
+         */
+        Matrix( int rows, int cols ) : _array(rows) {
+            for (auto &row : array) {
+                row.resize(cols);
+            }
+        }
+
+        Matrix( std::vector<std::vector<Object>> v ) : _array{ v } { }
+
+        Matrix( std::vector<std::vector<Object>> &&v ) : _array{ std::move(v) } { }
+
+        /*
+         * Array indexing operator. This returns the row (a vector<Object> at
+         * the index row.
+         */
+        const std::vector<Object> & operator[]( int row ) const {
+            return _array[row]
+        }
+
+        int numrows() const {
+            return _array.size();
+        }
+
+        int numcols() const {
+            return numrows() ? _array[0].size() : 0;
+        }
+
+    private:
+        /*
+        A matrix is represented by _array, a vector of vector<Object>.
+        */
+        std::vector<std::vector<Object>> _array;
+};
+
+#endif
+```
 
 ---
 
@@ -517,4 +620,50 @@ for every positive integer `n`.
 
 2. What's `1 + 2 + 4 + ... + 2^n`? Prove it.
 
+```
+n = 0 => 1                 => 1
+n = 1 => 1 + 2             => 3
+n = 2 => 1 + 2 + 4         => 7
+n = 3 => 1 + 2 + 4 + 8     => 15
+...
+n = n => 1 + 2 + ... + 2^n => 2^(n+1) - 1
+```
+
+Thus, `1 + 2 + 4 + ... + 2^n = 2^(n+1) - 1`.
+
+**Proof by induction:** 
+
+* **Base case:** When `n = 0`, then `1 = 2^(0+1) - 1 = 1`. When `n = 1`, then
+`2^0 + 2^1 = 3 = 2^(1+1) - 1 = 3`.
+
+* **Inductive step:** Since `1 = 2^(0+1) - 1`, the statement `P(1)` is true.
+Assume that `P(k)` is true for an arbitrary positive integer `k`. We show
+that `P(k+1)` is true. In other words, we show that
+
+`1 + 2 + 4 + ... + 2^(k+1) = 2^(k+2) - 1`.
+
+Thus, `1 + 2 + 4 + ... + 2^(k+1) = (1 + 2 + 4 + ... + 2^k) + 2^(k+1)`
+
+`= 2^(k+1) - 1 + 2^(k+1)`
+
+`= 2^(k+1) + 2^(k+1) - 1`
+
+`= 2 * 2^(k+1) - 1`
+
+`= 2^(k+2) - 1`
+
+Therefore, by the principle of mathematical induction, `P(n)` is true
+for every non-negative integer `n`.
+
 3. If `A_0 = 1` and `A_n = 2A_(n-1) + 1`, what's a closed formula for `A_n`? Prove it.
+
+```
+A_0                   = 1
+A_1 = 2 * A_0 + 1     = 3
+A_2 = 2 * A_1 + 1     = 7
+A_3 = 2 * A_2 + 1     = 15
+A_4 = 2 * A_3 + 1     = 31
+...
+A_n = 2 * A_(n-1) + 1 = 2^(n+1) - 1
+```
+
