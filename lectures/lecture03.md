@@ -1,6 +1,7 @@
 # Lecture 3: Algorithm analysis
 
-An **algorithm** . Among all the things we'd like to know about an algorithm,
+An **algorithm** is a clearly  defined set of simple instructions which must are
+to be followed in order to solve a particular problem.
 
 ## Mathematical background
 
@@ -321,7 +322,7 @@ size yields roughly hundrefold ($10^2$) increase in running time.
 
 ### Algorithm 1 (brute force)
 
-[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/implementations/max-subsequence-sum/):
+[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/tree/master/implementations/max-subsequence-sum/):
 
 ```bash
 Input: array A of integers.
@@ -344,7 +345,8 @@ to check, and average $\frac{N}{4}$ numbers to add. Thus we have $O(N^3)$.
 
 ### Algorithm 2 (brute force)
 
-[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/implementations/max-subsequence-sum/):
+[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/tree/master/implementations/max-subsequence-sum/):
+
 ```bash
 Input: array A of integers.
 Output: the maximum positive subsequence sum.
@@ -365,12 +367,12 @@ starting places and an average $\frac{N}{4}$ numbers to add. Thus we have $O(N^2
 
 ### Algorithm 3
 
-[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/implementations/max-subsequence-sum/):
+[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/tree/master/implementations/max-subsequence-sum/):
 
 ```bash
 Input: array A of integers.
-Output: find the maximum sum in subarray spanning A[LEFT..RIGHT]. It does not
-attempt to mantain actual best sequence.
+Output: find the maximum sum in subarray spanning A[LEFT..RIGHT]. It does
+not attempt to mantain actual best sequence.
 
 MaxSumRec( A, LEFT, RIGHT ): 
     # Base case
@@ -409,7 +411,7 @@ MaxSubsequenceSum( A ):
 
 ### Algorithm 4
 
-[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/implementations/max-subsequence-sum/):
+[`implementations/max-subsequence-sum`](https://github.com/uzluisf/HCCS335/tree/master/implementations/max-subsequence-sum/):
 
 ```bash
 Input: array A of integers.

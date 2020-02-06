@@ -1,4 +1,4 @@
-# L2: C++ Basics (cont.)
+# Lecture 2: C++ Basics (cont.)
 
 ## Parameter passing
 
@@ -11,7 +11,7 @@ parameters:
 * **call-by-value:** Useful to pass small objects that shouldn't be mutated by the
 function.
 
-```
+```cpp
 double average( double a, double b );
 double x = 2.5, y = 3.5;
 double z = average(x, y); // x and y remain unchanged
@@ -20,21 +20,22 @@ void swap( double a, double b ); // swap a and b
 swap(x, y); // Not what's expected; x and y remain unchanged
 ```
 
-* **call-by-reference (call-by-lvalue-reference):**  Useful for all type of objects that may be changed by
+* **call-by-reference (call-by-lvalue-reference):**  Useful for all type of
+  objects that may be changed by
 the function.
 
-```
+```cpp
 double x = 2.5, y = 3.5;
 swap( &a, &b );
 swap(x, y); // now x = 3.5 and y = 2.5
 ```
 
-* **call-by-constant-reference:**  Useful for large objects that are expensive to
-copy and that must not be changed by the function. For this, the parameter
+* **call-by-constant-reference:**  Useful for large objects that are expensive
+to copy and that must not be changed by the function. For this, the parameter
 is declared as a reference and the keyword `const` is used to signal that it
 cannot be modified.
 
-```
+```cpp
 string randomItem( const vector<string> &arr ); // return a random item in arr
 ```
 
@@ -47,7 +48,7 @@ is temporary or not based on their signature so the primary use for this
 type of parameter passing is overloading a function based on whether a parameter
 is an lvalue or rvalue.
 
-```
+```cpp
 string randomItem( const vector<string>  &arr ); // return random item in lvalue arr (single &)
 string randomItem(       vector<string> &&arr ); // return random item in rvalue arr (double &)
 
@@ -68,7 +69,7 @@ In C++, there are several mechanism for returning from a function:
 however in C++11 return-by-value may still be efficient for large objects if
 the returned objects are rvalues.
 
-```
+```cpp
 double average( double a, double b );
 LargeType randomItem( const vector<LargeType> &arr ); // potentially inefficient
 vector<int> partialSum( const vector<int> &arr );     // efficient in C++11
@@ -78,7 +79,7 @@ The following are two versions of the function `randomItem`. The second
 version avoids the creation of a temporary `LargeType` object, but only if
 the caller accesses it with a constant reference:
 
-```
+```cpp
 LargeType randomItem1( const vector<LargeType> &arr ) {
 	return arr[ randomInt(0, arr.size() -1) ];
 }
@@ -100,7 +101,7 @@ the return value; otherwise, there will be still a copy. What does the constant
 reference mean? It means that we don't want to allow changes to be made
 by the caller by using the return value.
 
-```
+```cpp
 const LargeType & randomItem2( const vector<LargeType> &arr ) {
 	return arr[ randomInt(0, arr.size() -1) ];
 }
@@ -123,7 +124,7 @@ moves.
 Take the following example of a `swap` function that swap its arguments by three
 copies:
 
-```
+```cpp
 void swap( vector<string> &x, vector<string> &y ) {
     vector<string> tmp = x;
     x = y;
@@ -138,7 +139,7 @@ of copy operations we could do move operations. These could be done either
 by casting the right-hand side of an assignment to an rvalue reference or
 by using `std::move`.
 
-```
+```cpp
 // Using type-casting
 void swap( vector<string> &x, vector<string> &y ) {
     vector<string> tmp = static_cast<vector<string> &&>( x );
@@ -160,7 +161,7 @@ lvalue or rvalue) subject *to be moved*.
 It's worth noting that `std::swap` is already part of STL and works for any
 part:
 
-```
+```cpp
 vector<string> x;
 vector<string> y;
 std::swap(x, y); // x contains y's contents and y contains x's contents
@@ -176,7 +177,7 @@ you cannot.
 
 Let's assume the following interface for the `IntCell` class:
 
-```
+```cpp
 #ifndef INTCELL_H
 #define INTCELL_H
 
@@ -200,7 +201,7 @@ to free up any resources that were acquired during the use of the object.
 This includes calling `delete` for any corresponding `new`s, closing any files
 that were opened, and so on.
 
-```
+```cpp
 IntCell::~IntCell() {
     delete value_;
 }
@@ -214,8 +215,7 @@ to the same state as another object of the same type.
 * If the existing object is an **lvalue**, then it's a **copy constructor**.
 * If the existing object is an **rvalue**, then it's a **move constructor**.
 
-
-```
+```cpp
 // Copy constructor, the parameter is an lvalue of the same type.
 IntCell::IntCell( const IntCell &rhs ) {
     stored_ = new int{*rhs.value_};
@@ -231,7 +231,7 @@ IntCell::IntCell( IntCell &&rhs ) : value_{rhs.value_} {
 
 * During a declaration with initialization.
 
-```
+```cpp
 IntCell B = C;   // Copy constructor if C is lvalue; Move constructor is C is rvalue
 IntCell B { C }; // same as above
 ```
@@ -249,7 +249,7 @@ the state of `rhs` (right hand side) is copied into `lhs` (left hand side).
 * If rhs is an **lvalue**, this is done using the copy assignment operator.
 * If rhs is an **rvalue**, this is done using the move assignment operator.
 
-```
+```cpp
 // Copy assignment operator
 IntCell & IntCell::operator=( const IntCell &rhs ) {
     if (this &= &rhs) {
@@ -268,7 +268,7 @@ IntCell & IntCell::operator=( IntCell &&rhs ) {
 In C++11, the copy assignment operator could be implemented more idiomatically
 with a copy-and-swap idiom:
 
-```
+```cpp
 // Copy assignment operator
 IntCell & IntCell::operator=( const IntCell &rhs ) {
     IntCell copy = rhs; // calls the copy constructor
@@ -334,7 +334,7 @@ using **templates**.
 A **function template** isn't an actual function, but instead a pattern for what
 could become a function. For example, the following is a function template:
 
-```
+```cpp
 /*
 Return the maximum item in array a.
 Assumes a.size() > 0.
@@ -355,7 +355,7 @@ const Comparable & findMax( const vector<Comparable> &a ) {
 
 Using the function template would look as follows:
 
-```
+```cpp
 vector<int>    v1 = { 37, 12, 1, 89 };
 vector<double> v2 = { 78.1, 89.8, 12.4, 1.1 };
 vector<string> v3 = { 'hi', 'ha', 'ho', 'he' };
@@ -390,7 +390,7 @@ as a **function object**.
 
 The following is the simplest implementation of the function object idea:
 
-```
+```cpp
 #include <iostream>
 #include <vector>
 #include <string>
@@ -447,7 +447,7 @@ ordering.
 
 The following is the more idiomatic implementation:
 
-```
+```cpp
 #include <iostream>
 #include <vector>
 #include <string>
@@ -504,7 +504,7 @@ The following `MultiCell` is an implementation that is like `IntCell`,
 but works for any type `Object`, provided that `Object` has a zero-parameter
 constructor, a copy constructor, and a copy assignment operator.
 
-```
+```cpp
 template <typename  Object>
 class MemoryCell {
     public:
@@ -537,7 +537,7 @@ constructing an Object with its zero-parameter constructor.
 This will be implemented by using a vector of vectors (e.g., a vector of `int`
 vectors).
 
-```
+```cpp
 #ifndef MATRIX_H
 #define MATRIX_H
 
@@ -591,79 +591,81 @@ class Matrix {
 
 ## Class problems
 
-1. What's `1 + 2 + 3 + ... + n`? Prove it.
+1. What's $1 + 2 + 3 + \ldots + n$? Prove it.
 
-`1 + 2 + 3 + ... + n = n(n+1) / 2`
+$1 + 2 + 3 + \cdots + n = \frac{n(n+1)}{2}$
 
 **Proof by induction:** 
 
-* **Base case:** When `n = 1`, then `1 = 1(1+1)/2 = 1`.
+* **Base case:** When $n = 1$, then $1 = 1(1+1)/2 = 1$.
 
-* **Inductive step:** Since `1 = (1 * 2)/2`, the statement `P(1)` is true.
-Assume that `P(k)` is true for an arbitrary positive integer `k`. We show
-that `P(k+1)` is true. In other words, 
+* **Inductive step:** Since $1 = (1 * 2)/2$, the statement $P(1)$ is true.
+Assume that $P(k)$ is true for an arbitrary positive integer $k$. We show
+that $P(k+1)$ is true. In other words, 
 
-`1 + 2 + 3 + ... + (k+1) = (k+1)(k+2) / 2`
+$$
+1 + 2 + 3 + \ldots + (k+1) = \frac{(k+1)(k+2)}{2}
+$$
 
 Thus
 
-`1 + 2 + 3 + ... + (k + 1) = (1 + 2 + 3 + ... + k) + (k + 1)`
+\begin{align*}
+1 + 2 + 3 + \cdots + (k + 1) &= (1 + 2 + 3 + \cdots + k) + (k + 1) \\
+&= \frac{k(k+1)}{2} + (k + 1) \\
+&= \frac{k(k+1)}{2} + (k + 1) \\
+&= \frac{(k+1)(k + 2)}{2} \\
+\end{align*}
 
-` = k(k+1)/2 + (k + 1)`
+Therefore, by the principle of mathematical induction, $P(n)$ is true
+for every positive integer $n$.
 
-` = k(k+1)/2 + (k + 1)`
+2. What's $1 + 2 + 4 + \cdots + 2^n$? Prove it.
 
-` = (k+1)(k + 2)/2`
+\begin{align*}
+n &= 0 => 1                 => 1 \\
+n &= 1 => 1 + 2             => 3 \\
+n &= 2 => 1 + 2 + 4         => 7 \\
+n &= 3 => 1 + 2 + 4 + 8     => 15 \\
+\cdots \\
+n &= n => 1 + 2 + \cdots + 2^n => 2^{(n+1)} - 1
+\end{align*}
 
-Therefore, by the principle of mathematical induction, `P(n)` is true
-for every positive integer `n`.
-
-2. What's `1 + 2 + 4 + ... + 2^n`? Prove it.
-
-```
-n = 0 => 1                 => 1
-n = 1 => 1 + 2             => 3
-n = 2 => 1 + 2 + 4         => 7
-n = 3 => 1 + 2 + 4 + 8     => 15
-...
-n = n => 1 + 2 + ... + 2^n => 2^(n+1) - 1
-```
-
-Thus, `1 + 2 + 4 + ... + 2^n = 2^(n+1) - 1`.
+Thus, $1 + 2 + 4 + \cdots + 2^n = 2^{(n+1)} - 1$.
 
 **Proof by induction:** 
 
-* **Base case:** When `n = 0`, then `1 = 2^(0+1) - 1 = 1`. When `n = 1`, then
-`2^0 + 2^1 = 3 = 2^(1+1) - 1 = 3`.
+* **Base case:** When $n = 0$, then $1 = 2^{(0+1)} - 1 = 1$. When $n = 1$, then
+$2^0 + 2^1 = 3 = 2^{(1+1)} - 1 = 3$.
 
-* **Inductive step:** Since `1 = 2^(0+1) - 1`, the statement `P(1)` is true.
-Assume that `P(k)` is true for an arbitrary positive integer `k`. We show
-that `P(k+1)` is true. In other words, we show that
+* **Inductive step:** Since $1 = 2^{(0+1)} - 1$, the statement $P(1)$ is true.
+Assume that $P(k)$ is true for an arbitrary positive integer $k$. We show
+that $P(k+1)$ is true. In other words, we show that
 
-`1 + 2 + 4 + ... + 2^(k+1) = 2^(k+2) - 1`.
+$$
+1 + 2 + 4 + \cdots + 2^{(k+1)} = 2^{(k+2)} - 1.
+$$
 
-Thus, `1 + 2 + 4 + ... + 2^(k+1) = (1 + 2 + 4 + ... + 2^k) + 2^(k+1)`
+Thus,
 
-`= 2^(k+1) - 1 + 2^(k+1)`
+\begin{align*}
+1 + 2 + 4 + \cdots + 2^{(k+1)} &= (1 + 2 + 4 + \cdots + 2^k) + 2^{(k+1)} \\
+&= 2^{(k+1)} - 1 + 2^{(k+1)} \\
+&= 2^{(k+1)} + 2^{(k+1)} - 1 \\
+&= 2 \cdot 2^{(k+1)} - 1 \\
+&= 2^{(k+2)} - 1 \\
+\end{align*}
 
-`= 2^(k+1) + 2^(k+1) - 1`
+Therefore, by the principle of mathematical induction, $P(n)$ is true
+for every non-negative integer $n$.
 
-`= 2 * 2^(k+1) - 1`
+3. If $A_0 = 1$ and $A_n = 2A_{(n-1)} + 1$, what's a closed formula for $A_n$? Prove it.
 
-`= 2^(k+2) - 1`
-
-Therefore, by the principle of mathematical induction, `P(n)` is true
-for every non-negative integer `n`.
-
-3. If `A_0 = 1` and `A_n = 2A_(n-1) + 1`, what's a closed formula for `A_n`? Prove it.
-
-```
-A_0                   = 1
-A_1 = 2 * A_0 + 1     = 3
-A_2 = 2 * A_1 + 1     = 7
-A_3 = 2 * A_2 + 1     = 15
-A_4 = 2 * A_3 + 1     = 31
-...
-A_n = 2 * A_(n-1) + 1 = 2^(n+1) - 1
-```
+\begin{align*}
+A_1 &= 2 \cdot A_0 + 1     = 3 \\
+A_2 &= 2 \cdot A_1 + 1     = 7 \\
+A_3 &= 2 \cdot A_2 + 1     = 15 \\
+A_4 &= 2 \cdot A_3 + 1     = 31 \\
+\cdots \\
+A_n &= 2 \cdot A_{(n-1)} + 1 = 2^{(n+1)} - 1 \\
+\end{align*}
 
