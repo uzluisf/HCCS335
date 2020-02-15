@@ -30,7 +30,8 @@ terminoly has developed for them:
   of the tree. This translates into the number of edges from node to the tree's
   root node. Thus, a root node will have a depth $0$.
 * The **height** of a node, $u$, is the length of the longest path from $u$ to
-  one of its descendants. Thus, the height of a tree is equal to the height of
+  one of its descendants. It's defined as $h = max(height(u.left),
+  height(u.right))$. Thus, the height of a tree is equal to the height of
   the root. Since leaves has no children, all leaves have height $0$.
 * A node, $u$, is a **leaf** if it has no children. 
 
@@ -363,11 +364,11 @@ find and delete the smallest node in the right subtree when this is
 appropriate. It's easy to remove this inefficiency by writing a special
 `removeMin` method.
 
-If the numder of deletions is expected to be small, then a popular strategy to
+If the number of deletions is expected to be small, then a popular strategy to
 use is **lazy evaluation**: When an element is to be deleted, it's left in the
 tree and merely *marked* as being deleted.
 
-**Props of lazy evaluation (in this context):**
+**Pros of lazy evaluation (in this context):**
 
 * Easy to handle if a deleted item is reinserted, do not need to allocate a new
   node.
@@ -401,11 +402,11 @@ In a BTS all subtree sizes are equally likely, so
 D(N) &= \frac{2}{N} \left[\sum^{N-1}_{j=0} D(j)\right] + N - 1
 \end{align*}
 
-By solving the above recurrence we show that $D(N) = O(N log_{N})$. Thus the
-expected depth of any node is $O(log_{N})$.
+By solving the above recurrence we show that $D(N) = O(NlogN)$. Thus the
+expected depth of any node is $O(logN)$.
 
 Although it's tempting to say that this result implies the average running time
-of all the operatuons is $log_{N}$, but this is not entirely true. The reason
+of all the operatuons is $logN$, but this is not entirely true. The reason
 for this is that because of deletions, it's not clear that all BSTs are equally
 likely. In particular, the deletion algorithm favors making the left subtrees
 deeper than the right, because we're always replacing a deleted node with a node
@@ -425,4 +426,140 @@ all take longer on average for updates. They do, however, provide protection
 against the embarrassingly simple cases. Below, we will sketch one of the oldest
 forms of balanced search trees, the AVL tree.
 
-## AVLs
+## AVL trees
+
+An AVL (Adelson-Velskii-Landis) tree is a a binary search tree that is
+*height-balanced*: At each node $u$, the height of the subtree rooted
+at `u.left` and the subtree rooted at `u.right` differ by at most $1$. 
+The balance condition must be easy to mantain, and it ensures that
+the depth of the tree $O(logN)$. The simplest idea is to require that the *left
+and right subtrees have the same height*.
+
+It follows immediately that, if 
+$F(h)$ is the minimum number of leaves in a tree of height $h$, then $F(h)$
+obeys the Fibonacci recurrence $F(h) =F(h-1) +F(h-2)$ with base
+cases $F(0) = 1$ and $F(1) = 1$.  This means $F(h)$ is approximately 
+$\frac{\phi^{h}}{\sqrt{5}}$, where $\phi = (1 + \sqrt{5})/2 \approx 1.61803399$
+is the *golden ratio* (More precisely,$\vert\phi^{h}/\sqrt{5} - F(h) \vert \leq 1/2$.)
+This implies $h \leq log_{\phi} n \approx 1.44042008\text{log} n$, although in
+practice is only slightly more than $\text{log}N$.
+
+An **AVL tree** is identical to a binary search tree, except that for every node
+in the tree, the height of the left and right subtrees can differ by at most $1$.
+The height of an empty tree is defined to be $-1$.
+
+![AVL tree and non-AVL tree](./images/avl-nonavl-tree.png "AVL tree and non-AVL tree")
+
+### Insertion cases
+
+After an insertion, only nodes that are on the path from the insertion point to
+the  root might have their balance altered because only those nodes have their
+subtrees altered. As we follow the path up to the root and update the *balancing
+information*, we may find a fnode whose new balance violates the AVL condition.
+
+Suppose that $\alpha$ is the first node on the path that needs to be rebalanced.
+Since any node has at most two children, and a height imbalance requires that
+the two subtrees's heights of $\alpha$ differ by two, it's easy to see that a
+violation might occur in four cases:
+
+1. An insertion into the left subtree of the left child of $\alpha$.
+2. An insertion into the right subtree of the left child of $\alpha$.
+3. An insertion into the left subtree of the right child of $\alpha$.
+4. An insertion into the right subtree of the right child of $\alpha$.
+
+Cases 1 and 4 are mirror image symmetries with respect to $\alpha$, as are cases
+2 and 4. Thus, as a matter of theory, there are only two basic cases. Although
+programmatically, there are still four cases.
+
+A **single rotation** of the tree fixes case 1 (and 4) in which the insertion
+occurs on the *outside* (i.e., left-left or right-right). A **double rotation**
+(which is slightly more complex) fixes case 2 (and 3) in which the insertion
+occurs on the *inside* (i.e., left-right or right-left). The implementation of a
+double rotation simply involves two calls to the routine implementing a single
+rotation, although conceptually it may be easier to consider them two separate
+and different operations.
+
+#### Single rotation
+
+---
+
+**Single rotation to fix case 1:**
+
+In the "Single rotation to fix case 1" figure, subtree $X$ has grown to an extra
+level, causing it to be exactly two levels deeper than $Z$. The subtree $Y$
+cannot be at the same level as the $X$ because then $k_2$ would have been out of
+balance *before* the insertion, and $Y$ cannot be at the same level as $Z$
+because  then $k_1$ would be the first node on the path toward the root that was
+in violation of the AVL balancing property.
+
+To ideally rebalance the tree, we would like to move $X$ up a level and $Z$ down a
+level. By grabbing child node $k_1$ and letting the other nodes hang, the result
+is that $k_1$ will be the new root. The binary search tree property tells us
+that in the original tree $k_2 > k_1$, so $k_2$ becomes the right child of $k_1$
+in the new tree. $X$ and $Z$ remain as the left child of $k_1$ and right
+child of $k_2$, respectively. Subtree $Y$, which holds items that are between
+$k_1$ and $k_2$ in the original tree, can be placed as $k_2$’s left child in the
+new tree and satisfy all the ordering requirements.
+
+![Single rotation to fix case 1](./images/single-rotation-case-1.png "Single rotation case 1")
+
+**Single rotation to fix case 4:**
+
+Case 4 represents a symmetric case and the "Single rotation to fix case 4"
+figure shows how a single rotation is applied.
+
+![Single rotation to fix case 4](./images/single-rotation-case-4.png "Single rotation case 4")
+
+#### Example
+
+Let's suppose we start with an empty AVL tree and inserts the items $3, 2, 1$,
+and then $4$ through $7$ sequentially. As we insert certain items, we must do
+some rotations along the ways.
+
+The first problem occurs when it's time to insert the item $1$ because the AVL
+tree property is violated at the root. Thus, we perform a single rotation
+between the root and its left child to fix the problem. The "First rotation
+after violation of AVL property" figure shows the before and after the rotation.
+
+![First rotation after violation of AVL property](./images/example-rotation-1.png "First rotation after violation of AVL property")
+
+Next we insert $4$ but it causes no problems. However the insertion of $5$
+creates a violation at node $3$ that is fixed by a single rotation. The rest of
+the tree has to be informed of this change so $2$'s right child must be reset to
+link to $4$ instead of $3$. The "Second rotation after violation of AVL
+property" figure shows the before and after the rotation.
+
+![Second rotation after violation of AVL property](./images/example-rotation-2.png "Second rotation after violation of AVL property")
+
+Next we insert $6$ that causes a balance problem at the root, since its left
+subtree is of height $0$ and its right subtree would be of height 2. Therefore,
+we perform a single rotation at the root between $2$ and $4$. The rotation is
+performed by making $2$ a child of $4$ and $4$'s original left subtree the new
+right subtree of $2$. Every item in this subtree must lie between $2$ and $4$,
+so this transformation makes sense. The "Third rotation after violation of AVL
+property" figure shows the before and after the rotation.
+
+![Third rotation after violation of AVL property](./images/example-rotation-3.png "Third rotation after violation of AVL property")
+
+The next item we insert is $7$, which causes another rotation. The "Fourth
+rotation after violation of AVL property" figure shows the before and after
+the rotation.
+
+![Fourth rotation after violation of AVL property](./images/example-rotation-4.png "Fourth rotation after violation of AVL property")
+
+
+#### Double rotation
+
+The reason why single rotation doesn't work in cases 2 and 3 is because a
+subtree might be too deep, and a single rotation doesn't make it any less deep.
+
+---
+
+**Double rotation to fix case 2:**
+
+![Left-right double rotation to fix case 2](./images/double-rotation-case-2.png "Left-right double rotation to fix case 2")
+
+**Double rotation to fix case 3:**
+
+![Right-left double rotation to fix case 3](./images/double-rotation-case-3.png "Right-left double rotation to fix case 3")
+
