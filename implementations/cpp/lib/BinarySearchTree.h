@@ -15,11 +15,29 @@ class BinarySearchTree {
         ///~BinarySearchTree();                                        // destructor
 
         /*
+        @brief Find the smallest item in a subtree.
+        @return Comparable
+        */
+        const Comparable& findMin() const;
+
+        /*
+        @brief Find the largest item in a subtree.
+        @return Comparable
+        */
+        const Comparable& findMax() const;
+
+        /*
         @brief Insert x into the tree; duplicates are ignored.
         @return void
         */
         void insert( const Comparable& x );
         void insert( Comparable&& x );
+
+        /*
+        @brief Remove x from the tree.
+        @return void
+        */
+        void remove( const Comparable& x );
 
         /*
         @brief Return true if x us found in the tree.
@@ -41,22 +59,26 @@ class BinarySearchTree {
 
     private:
         struct BinaryNode {
-            Comparable  _item;
-            BinaryNode* _left;
-            BinaryNode* _right;
+            Comparable  item;
+            BinaryNode* left;
+            BinaryNode* right;
 
             // copy constructor
             BinaryNode( const Comparable& item, BinaryNode* left, BinaryNode* right)
-                : _item{ item }, _left{ left }, _right{ right } {}
+                : item{ item }, left{ left }, right{ right } {}
             // move constructor
             BinaryNode( Comparable&& item, BinaryNode* left, BinaryNode* right)
-                : _item{ item }, _left{ left }, _right{ right } {}
+                : item{ item }, left{ left }, right{ right } {}
         };
 
         BinaryNode* _root;
 
+        BinaryNode* _findMin( BinaryNode* t) const;
+        BinaryNode* _findMax( BinaryNode* t) const;
+
         void _insert( const Comparable& item, BinaryNode*& t );
         void _insert( Comparable&& item, BinaryNode*& t );
+        void _remove( const Comparable& x, BinaryNode*& t);
 
         bool _contains( const Comparable& x, BinaryNode* t) const;
         
@@ -66,17 +88,33 @@ class BinarySearchTree {
 PRIVATE METHODS
 ******************************************************************************/
 template<typename Comparable>
+typename BinarySearchTree<Comparable>::BinaryNode* BinarySearchTree<Comparable>::_findMin( BinaryNode* t ) const {
+    if (t == nullptr) return nullptr;
+    if (t->left == nullptr) return t;
+    return _findMin(t->left);
+}
+
+template<typename Comparable>
+typename BinarySearchTree<Comparable>::BinaryNode* BinarySearchTree<Comparable>::_findMax( BinaryNode* t ) const {
+    if (t != nullptr) {
+        while (t->right != nullptr)
+            t = t->right;
+    }
+    return t;
+}
+
+template<typename Comparable>
 void BinarySearchTree<Comparable>::_insert( const Comparable& x, BinaryNode*& t ) {
     if (t == nullptr) {
         t = new BinaryNode{ x, nullptr, nullptr };
     }
     // visit left subtree
-    else if (x < t->_item) {
-        _insert(x, t->_left);
+    else if (x < t->item) {
+        _insert(x, t->left);
     }
     // visit right subtree
-    else if (x > t->_item) {
-        _insert(x, t->_right);
+    else if (x > t->item) {
+        _insert(x, t->right);
     }
     else { ; } // Duplicate; do nothing
 }
@@ -87,14 +125,40 @@ void BinarySearchTree<Comparable>::_insert( Comparable&& x, BinaryNode*& t ) {
         t = new BinaryNode{ std::move(x), nullptr, nullptr };
     }
     // visit left subtree
-    else if (x < t->_item) {
-        _insert(std::move(x), t->_left);
+    else if (x < t->item) {
+        _insert(std::move(x), t->left);
     }
     // visit right subtree
-    else if (x > t->_item) {
-        _insert(std::move(x), t->_right);
+    else if (t->item < x) {
+        _insert(std::move(x), t->right);
     }
     else { ; } // Duplicate; do nothing
+}
+
+template<typename Comparable>
+void BinarySearchTree<Comparable>::_remove( const Comparable& x, BinaryNode*& t) {
+    if (t == nullptr) {
+        return; // item not found; do nothing
+    }
+
+    if (x < t->item) {
+        _remove(x, t->left);
+    }
+    else if (t->item < x) {
+        _remove(x, t->right);
+    }
+    // node with two children
+    else if (t->left != nullptr && t->right != nullptr) {
+        Comparable item = _findMin(t->right)->item;
+        t->item = item;
+        _remove(item, t->right);
+    }
+    // node with less than two children
+    else {
+        BinaryNode* oldNode = t;
+        t = (t->left != nullptr) ? t->left : t->right;
+        delete oldNode;
+    }
 }
 
 template<typename Comparable>
@@ -103,12 +167,12 @@ bool BinarySearchTree<Comparable>::_contains( const Comparable& x, BinaryNode* t
         return false;
     }
     // look in the left subtree
-    else if (x < t->_item) {
-        return _contains(x, t->_left);
+    else if (x < t->item) {
+        return _contains(x, t->left);
     }
     // look in the right subtree
-    else if (x > t->_item) {
-        return _contains(x, t->_right);
+    else if (t->item < x) {
+        return _contains(x, t->right);
     }
     // Found a match
     else {
@@ -125,9 +189,23 @@ BinarySearchTree<Comparable>::BinarySearchTree() {
     _root = nullptr; 
 }
 
+//template<typename Comparable>
+//BinarySearchTree<Comparable>::BinarySearchTree( const BinarySearchTree& rhs ) {
+//}
+
 /******************************************************************************
-CONSTRUCTORS AND BIG FIVE 
+PUBLIC METHODS
 ******************************************************************************/
+
+template<typename Comparable>
+const Comparable& BinarySearchTree<Comparable>::findMin() const {
+    return (_findMin(_root))->item;
+}
+
+template<typename Comparable>
+const Comparable& BinarySearchTree<Comparable>::findMax() const {
+    return (_findMax(_root))->item;
+}
 
 template<typename Comparable>
 void BinarySearchTree<Comparable>::insert( const Comparable& x ) {
@@ -137,6 +215,11 @@ void BinarySearchTree<Comparable>::insert( const Comparable& x ) {
 template<typename Comparable>
 void BinarySearchTree<Comparable>::insert( Comparable&& x ) {
     _insert(x, _root);
+}
+
+template<typename Comparable>
+void BinarySearchTree<Comparable>::remove( const Comparable& x ) {
+    _remove(x, _root);
 }
 
 template<typename Comparable>
@@ -153,7 +236,7 @@ bool BinarySearchTree<Comparable>::isEmpty() const {
 template<typename Comparable>
 void BinarySearchTree<Comparable>::printTree( std::ostream& out ) const {
     // scaffolding
-    std::cout << _root->_item << "\n";
+    std::cout << _root->item << "\n";
 }
 
 #endif

@@ -26,7 +26,7 @@ To compile the program above (e.g., `main.cpp`) in the same directory as
 `lib` directory:
 
 ```
-$ g++ -o prog lib/BinarySearch main.cpp
+$ g++ -o prog lib/BinarySearch.h main.cpp
 ```
 
 This creates the executable `prog`.

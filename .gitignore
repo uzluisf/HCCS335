@@ -1,3 +1,4 @@
 /implementations/raku/**/**/*.raku
 /implementations/raku/**/**/.precomp
 /implementations/cpp/**/**/*.cpp
+!/implementations/cpp/examples/*.cpp
