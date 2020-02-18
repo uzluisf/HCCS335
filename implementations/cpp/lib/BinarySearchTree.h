@@ -8,11 +8,11 @@ template<typename Comparable>
 class BinarySearchTree {
     public:
         BinarySearchTree();
-        ///BinarySearchTree( const BinarySearchTree& rhs );            // copy constructor
-        ///BinarySearchTree( const BinarySearchTree&& rhs );           // move constructor
-        ///BinarySearchTree& operator=( const BinarySearchTree& rhs ); // copy assign.
-        ///BinarySearchTree& operator=( BinarySearchTree&& rhs );      // move assign.
-        ///~BinarySearchTree();                                        // destructor
+        BinarySearchTree( const BinarySearchTree& rhs );              // copy constructor
+        //BinarySearchTree( const BinarySearchTree&& rhs );           // move constructor
+        BinarySearchTree& operator=( const BinarySearchTree& rhs );   // copy assign.
+        ///BinarySearchTree& operator=( BinarySearchTree&& rhs );     // move assign.
+        ~BinarySearchTree();                                          // destructor
 
         /*
         @brief Find the smallest item in a subtree.
@@ -52,10 +52,19 @@ class BinarySearchTree {
         bool isEmpty() const;
 
         /*
+        @brief Make the tree logically empty.
+        @return vod
+        */
+        void makeEmpty() {
+            _makeEmpty(_root);
+        }
+
+        /*
         @brief Print string representation of BTS.
         @return void
         */
         void printTree( std::ostream& out = std::cout ) const;
+
 
     private:
         struct BinaryNode {
@@ -79,8 +88,10 @@ class BinarySearchTree {
         void _insert( const Comparable& item, BinaryNode*& t );
         void _insert( Comparable&& item, BinaryNode*& t );
         void _remove( const Comparable& x, BinaryNode*& t);
-
         bool _contains( const Comparable& x, BinaryNode* t) const;
+        void _makeEmpty( BinaryNode*& t );
+        void _print( BinaryNode* node, std::ostream& out ) const;
+        BinaryNode* _clone( BinaryNode *t ) const;
         
 };
 
@@ -180,6 +191,36 @@ bool BinarySearchTree<Comparable>::_contains( const Comparable& x, BinaryNode* t
     }
 }
 
+// in-order traversal
+template<typename Comparable>
+void BinarySearchTree<Comparable>::_print( BinaryNode* node, std::ostream& out ) const {
+    if (node != nullptr) {
+        if (node->left)  { _print(node->left, out); }
+        out << node->item << " ";
+        if (node->right) { _print(node->right, out); }
+    }
+}
+
+template<typename Comparable>
+void BinarySearchTree<Comparable>::_makeEmpty( BinaryNode*& t ) {
+    if (t != nullptr) {
+        _makeEmpty(t->left);
+        _makeEmpty(t->right);
+        delete t;
+        t = nullptr;
+    }
+}
+
+template<typename Comparable>
+typename BinarySearchTree<Comparable>::BinaryNode* BinarySearchTree<Comparable>::_clone( BinaryNode *t ) const {
+    if (t == nullptr) {
+        return nullptr;
+    }
+    else {
+        return new BinaryNode( t->item, _clone( t->left ), _clone( t->right ) );
+    }
+}
+
 /******************************************************************************
 CONSTRUCTORS AND BIG FIVE 
 ******************************************************************************/
@@ -189,9 +230,25 @@ BinarySearchTree<Comparable>::BinarySearchTree() {
     _root = nullptr; 
 }
 
-//template<typename Comparable>
-//BinarySearchTree<Comparable>::BinarySearchTree( const BinarySearchTree& rhs ) {
-//}
+template<typename Comparable>
+BinarySearchTree<Comparable>::BinarySearchTree( const BinarySearchTree& rhs ) : _root{ nullptr } {
+    *_root = rhs;
+}
+
+// deep copy
+template<typename Comparable>
+BinarySearchTree<Comparable>& BinarySearchTree<Comparable>::operator=( const BinarySearchTree& rhs ) {
+    if (this != &rhs ) {
+        makeEmpty();
+        _root = _clone(rhs._root);
+    }
+    return *this;
+}
+
+template<typename Comparable>
+BinarySearchTree<Comparable>::~BinarySearchTree() {
+    makeEmpty();
+}
 
 /******************************************************************************
 PUBLIC METHODS
@@ -235,8 +292,10 @@ bool BinarySearchTree<Comparable>::isEmpty() const {
 
 template<typename Comparable>
 void BinarySearchTree<Comparable>::printTree( std::ostream& out ) const {
-    // scaffolding
-    std::cout << _root->item << "\n";
+    _print(_root, out);
+    out << "\n";
 }
+
+
 
 #endif
