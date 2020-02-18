@@ -31,7 +31,7 @@ terminoly has developed for them:
   root node. Thus, a root node will have a depth $0$.
 * The **height** of a node, $u$, is the length of the longest path from $u$ to
   one of its descendants. It's defined as $h = max(height(u.left),
-  height(u.right))$. Thus, the height of a tree is equal to the height of
+  height(u.right)) + 1$. Thus, the height of a tree is equal to the height of
   the root. Since leaves has no children, all leaves have height $0$.
 * A node, $u$, is a **leaf** if it has no children. 
 
@@ -334,10 +334,7 @@ link to bypass the node.
   Because the smallest node in the right subtree cannot have a left child, the
   second `remove` is an easy one.
 
-![Removing single child node from tree](./images/remove-node-one-child.png "removing single child node")
-
 ![Removing node with two children from tree](./images/remove-node-two-children.png "removing node with two children from tree")
-
 
 ```bash
 Input: X is an item to be removed and T is the tree.
@@ -412,7 +409,7 @@ likely. In particular, the deletion algorithm favors making the left subtrees
 deeper than the right, because we're always replacing a deleted node with a node
 from the right subtree. 
 
-### Balanced trees
+## Balanced trees
 
 If the input comes into a tree presorted, then a series of inserts will take
 *quadratic time* and give a very expensive implementation of a linked list,
@@ -483,6 +480,8 @@ and different operations.
 
 ---
 
+**NOTE:** $k_1 < k_2$
+
 **Single rotation to fix case 1:**
 
 In the "Single rotation to fix case 1" figure, subtree $X$ has grown to an extra
@@ -521,7 +520,7 @@ tree property is violated at the root. Thus, we perform a single rotation
 between the root and its left child to fix the problem. The "First rotation
 after violation of AVL property" figure shows the before and after the rotation.
 
-![First rotation after violation of AVL property](./images/example-rotation-1.png "First rotation after violation of AVL property")
+![First rotation after violation of AVL property](./images/example-rotation-01.png "First rotation after violation of AVL property")
 
 Next we insert $4$ but it causes no problems. However the insertion of $5$
 creates a violation at node $3$ that is fixed by a single rotation. The rest of
@@ -529,7 +528,7 @@ the tree has to be informed of this change so $2$'s right child must be reset to
 link to $4$ instead of $3$. The "Second rotation after violation of AVL
 property" figure shows the before and after the rotation.
 
-![Second rotation after violation of AVL property](./images/example-rotation-2.png "Second rotation after violation of AVL property")
+![Second rotation after violation of AVL property](./images/example-rotation-02.png "Second rotation after violation of AVL property")
 
 Next we insert $6$ that causes a balance problem at the root, since its left
 subtree is of height $0$ and its right subtree would be of height 2. Therefore,
@@ -539,13 +538,13 @@ right subtree of $2$. Every item in this subtree must lie between $2$ and $4$,
 so this transformation makes sense. The "Third rotation after violation of AVL
 property" figure shows the before and after the rotation.
 
-![Third rotation after violation of AVL property](./images/example-rotation-3.png "Third rotation after violation of AVL property")
+![Third rotation after violation of AVL property](./images/example-rotation-03.png "Third rotation after violation of AVL property")
 
 The next item we insert is $7$, which causes another rotation. The "Fourth
 rotation after violation of AVL property" figure shows the before and after
 the rotation.
 
-![Fourth rotation after violation of AVL property](./images/example-rotation-4.png "Fourth rotation after violation of AVL property")
+![Fourth rotation after violation of AVL property](./images/example-rotation-04.png "Fourth rotation after violation of AVL property")
 
 
 #### Double rotation
@@ -555,6 +554,8 @@ subtree might be too deep, and a single rotation doesn't make it any less deep.
 
 ---
 
+**NOTE:** $k_1 < k_2 < k_3$
+
 **Double rotation to fix case 2:**
 
 ![Left-right double rotation to fix case 2](./images/double-rotation-case-2.png "Left-right double rotation to fix case 2")
@@ -563,3 +564,30 @@ subtree might be too deep, and a single rotation doesn't make it any less deep.
 
 ![Right-left double rotation to fix case 3](./images/double-rotation-case-3.png "Right-left double rotation to fix case 3")
 
+#### Example
+
+For this example, we'll continue with the AVL tree depicted in the
+"Fourth rotation after violation of AVL property" figure from the "Single
+rotation" section. We'll start by inserting $10$ through $16$ (in reverse
+order), followed by $8$ and then $9$.
+
+Inserting $16$ is easy since it doesn't violate the AVL balance property. However,
+inserting $15$ causes a height imbalance at node $7$, which is case 3 and solved by
+a right-left double rotation.
+
+![Fifth rotation after violation of AVL property](./images/example-rotation-05.png "Fifth rotation after violation of AVL property")
+
+Next we insert $14$, which also requires the same double rotation as before.
+
+![Sixth rotation after violation of AVL property](./images/example-rotation-06.png "Sixth rotation after violation of AVL property")
+
+The insertions of $13$, $12$, $11$, and $10$ all cause height imbalance that are
+fixed using single rotations.
+
+![Tree after the seventh, eighth, ninth and tenth rotations after violation of AVL property](./images/example-rotation-07-through-10.png "Tree after the seventh, eighth, ninth and tenth rotations after violation of AVL property")
+
+We can insert 8 without rotation, creating an almost perfectly balanced tree.
+The insertion of $9$ causes a height imbalance at the node containing $10$
+which is fixed by a left-right double rotation. 
+
+![Tree after the twelfth rotation](./images/example-rotation-11-through-12.png "Tree after the twelfth rotation")
