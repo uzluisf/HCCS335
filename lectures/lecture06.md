@@ -502,12 +502,70 @@ new tree and satisfy all the ordering requirements.
 
 ![Single rotation to fix case 1](./images/single-rotation-case-1.png "Single rotation case 1")
 
+#### Simplified example
+
+Imagine we have this situation:
+
+```
+a
+ \
+  b
+   \
+    c
+```
+
+There's a height balance (i.e., the difference between his left and right
+subtree is greater than the balance factor, usually $1$) in the node `a`.
+To fix this, we must perform a *left rotation* rooted at `a`. The steps are the
+following:
+
+1. `b` becomes the new root.
+2. `a` takes ownership of `b`'s left child as its right child. In this case,
+   `null`.
+3. `b` takes ownership of `a` as its left child.
+
+The tree end up looking as follows:
+
+```
+   b
+  / \
+ a   c
+```
+
 **Single rotation to fix case 4:**
 
 Case 4 represents a symmetric case and the "Single rotation to fix case 4"
 figure shows how a single rotation is applied.
 
 ![Single rotation to fix case 4](./images/single-rotation-case-4.png "Single rotation case 4")
+
+#### Simplified example
+
+Imagine we've this situation:
+
+```
+    c
+   /
+  b
+ /
+a
+```
+
+There's a height imbalance at node `c`, thus perform a *right rotation* rooted
+at `c`. The steps are the following:
+
+1. `b` becomes the new root.
+2. `c` takes ownership of `b`'s right child as its left child. In this case,
+   `null`.
+3. `b` takes ownership of `c` as its right child.
+
+The tree ends up looking as follows:
+
+```
+  b
+ / \
+a   c
+```
 
 #### Example
 
@@ -560,9 +618,98 @@ subtree might be too deep, and a single rotation doesn't make it any less deep.
 
 ![Left-right double rotation to fix case 2](./images/double-rotation-case-2.png "Left-right double rotation to fix case 2")
 
+#### Simplified example
+
+Imagine we've the following situation:
+
+```
+a
+ \
+  c
+ /
+b
+```
+
+There's a height balance at node `a`, however performing a single rotation
+won't achieve the desired result.
+
+The steps are the following:
+
+1. Perform a right rotation on the right subtree (we aren't rotating our current
+   root).
+
+```
+  c
+ /
+b
+```
+
+becomes
+
+```
+b
+ \
+  c
+```
+
+2. Performing the rotation on the right subtree has prepared the root to be
+   rotated left. The tree now is:
+
+```
+a
+ \
+  b
+   \
+    c
+```
+
+3. Rotate the tree left. The result is:
+
+```
+  b
+ / \
+a   c
+```
+
 **Double rotation to fix case 3:**
 
 ![Right-left double rotation to fix case 3](./images/double-rotation-case-3.png "Right-left double rotation to fix case 3")
+
+#### Simplified example
+
+Take the following tree:
+
+```
+  c
+ /
+a
+ \
+  b
+```
+
+There's a height balance at node `c`.
+
+The steps are the following:
+
+1. Perform a left rotation on the left subtree. Doing so leaves us with this
+   situation:
+
+```
+    c
+   /
+  b
+ /
+a
+```
+
+2. The tree can now be balanced using a single right rotation. Perform the right
+   rotation at `c`. The result is:
+
+```
+  b
+ / \
+a   c
+```
 
 #### Example
 
@@ -591,3 +738,14 @@ The insertion of $9$ causes a height imbalance at the node containing $10$
 which is fixed by a left-right double rotation. 
 
 ![Tree after the twelfth rotation](./images/example-rotation-11-through-12.png "Tree after the twelfth rotation")
+
+### When do you use rotations? Why?
+
+Deciding when you need a tree rotation is usually easy, but determining which
+type of rotation you need requires a little thought.
+
+A tree rotation is necessary when you have inserted or deleted a node which
+leaves the tree in an **unbalanced state**.  An unbalanced state is defined
+as a state in which any subtree has a balance factor of greater than 1, or
+less than -1.  That is, any tree with a difference between the heights of its
+two subtrees greater than 1, is considered unbalanced.
