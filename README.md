@@ -9,4 +9,5 @@ Lecture notes for CS335 (Software Design and Analysis III).
 * [L4: Algorithm analysis (cont.) and lists/stacks/queues](./lectures/lecture04.md)
 * [L5: Lists, Stacks, Queues, and the STL](./lectures/lecture05.md)
 * [L6: Trees](./lectures/lecture06.md)
-* [L6: Splay trees, and B-trees](./lectures/lecture07.md)
+* [L7: Splay trees, and B-trees](./lectures/lecture07.md)
+* [L8: Sets and maps](./lectures/lecture08.md)
