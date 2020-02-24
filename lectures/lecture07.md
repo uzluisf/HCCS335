@@ -188,11 +188,13 @@ occur, and the typical case is very close to log N. Thus an AVL tree would use
 about 25 disk accesses on average, requiring 4 sec.
 
 We want to reduce the number of disk accesses to a very small constant, such as
-three or four. Basically, wee need smaller trees (i.e., trees with more
+three or four. Basically, we need smaller trees (i.e., trees with more
 branching and thus less height). An **$M$-ary search tree** allows $M$-way
 branching. *As branching increases, the depth decreases*. Whereas a complete
 binary tree has height that is roughly $log_{2}N, a complete $M$-ary tree has
 height that is roughly $log_{M} N$.
+
+![5-ary tree with 31 nodes](images/5-ary-tree-example.png "5-ary tree")
 
 A **B-tree** of order $M$ is an $M$-ary tree with the following properties:
 
@@ -207,6 +209,40 @@ for some $L$.
 $M$ and $L$ are determined based on disk block (one access should load a whole
 node).
 
+![B-tree of order 5](images/order-5-b-tree.png "b-tree example")
+
+The "B-tree of order 5" figure depicts a B-tree of order 5:
+
+* Each represents a disk block.
+* All nonleaf nodes have between $3$ and $5$ children.
+* $L = M = 5$, however this not need to be the case.
+* Since $L = 5$, each leaf has between $3$ and $5$ data items.
+
+In the Florida driving records example:
+
+* A single block is supposed to hold $8,192$ bytes.
+* Each key uses 32 bytes. In a B-tree of order $M$, we would've $M-1$
+  keys, for a total of $32 \times (M-1) = 32M - 32$ bytes, plus $M$
+  branches.
+* Each branch is essentially a number of another disk block, so we can
+  assume a branch is $4$ bytes. Thus the branches use $4M$ bytes.
+* The total memory requirement for a nonleaf node is thus $32M - 32 +
+  4M = 36M-32$.
+* Since $8192 \leq 36M-32$, the largest value of $M$ for which this is
+  no more thant $8192$ is $228$. Thus we choose $M = 228$.
+* Since each data record is $256$ bytes, we'd be able to fit $32$
+  records in a block. Thus we'd choose $L=32$.
+* Each leaf has between $16$ and $32$ data records and each internal
+  node (except the root) branches in at least $114$ ways.
+* Since there are $10,000,000$ records, there are, at most, $625,000$
+  leaves. Consequently, in the worst case, leaves would be on level
+  $4$ of the tree.
+  * The worst-case number of accesses is given by approximately $log_{M/2}N$.
+  * The root and the next level could be *cached* in main memory, so
+    that over the long run, disk accesses would be needed only for
+    level tree and deeper.
+
+
 ### Example
 
 ### Insertion
@@ -217,9 +253,18 @@ node).
 * If you need to split the root, add a new one with two children. This is the
   only way you add depth.
 
+![B-tree of order 5: Inserting 57](images/order-5-b-tree-inserting-57.png "b-tree example-insertion")
+
+![B-tree of order 5: Inserting 55](images/order-5-b-tree-inserting-55.png "b-tree example-insertion")
+
+![B-tree of order 5: Inserting 40](images/order-5-b-tree-inserting-40.png "b-tree example-insertion")
+
 ### Deletion
 
 * Delete from appropriate leaf.
 * If the leaf is below its minimum, adopt from a neighbor if possible.
 * If that’s not possible, you can merge with the neighbor. This causes the
   parent to lose a branch and you continue upward recursively.
+
+![B-tree of order 5: Inserting 40](images/order-5-b-tree-deleting-99.png "b-tree example-deletion")
+
