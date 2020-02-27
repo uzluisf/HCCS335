@@ -2,7 +2,7 @@ use Test;
 use BinarySearchTree;
 
 subtest 'using nodes of integers', {
-    my $bst = BinarySearchTree[Int].new(less-than => sub ($a, $b --> Bool) { $a < $b });
+    my $bst = BinarySearchTree[Int].new;
 
     is $bst.is-empty, True, 'BST is empty.';
 
@@ -25,33 +25,50 @@ subtest 'using nodes of integers', {
     is $bst.is-empty, True, 'BST is empty after removing all its nodes.';
 }
 
-subtest 'using nodes with objects', {
-    class Person {
-        has $.name;
-        method Str { "Name: " ~ $!name }
-    }
+subtest 'using nodes with Point2D objects', {
+    class Point2D is Cool {
+        has Int:D $.x = 0;
+        has Int:D $.y = 0;
 
-    my @names = <Alice Josiah Aerem Lem Dullias Xras>;
-    my @items = gather for @names { take Person.new(:name($_)) };
+        multi method distance( --> Numeric ) {
+            self.distance: self, Point2D.new(:0x, :0y);
+        }
 
-    my $bst = BinarySearchTree[Person].new(
-        less-than => sub ($a, $b --> Bool) { $a.name lt $b.name }
-    );
+        multi method distance( Point2D:D $A, Point2D:D $B --> Numeric ) {
+            (($A.x - $B.x)**2 + ($A.y - $B.y)**2).sqrt
+        }
 
-    is $bst.is-empty, True, 'BST is empty.';
+        method gist {
+            "Point2D($!x, $!y)"
+        }
 
-    $bst.insert($_) for @items;
-
-    is $bst.find-min, @items.sort(*.name)[0], 'find correct minimum value.';
-    is $bst.find-max, @items.sort(*.name)[*-1], 'find correct maximum value.';
-
-    subtest 'BST contains the right nodes.', {
-        for @items {
-            is $bst.contains($_), True, "BST contains node with value $_."
+        method Numeric {
+            self.distance
         }
     }
 
-    for @items {
+    my @points = 
+        Point2D.new(:3x, :4y), Point2D.new(:6x, :8y), Point2D.new(:1x, :1y),
+        Point2D.new(:5x, :8y), Point2D.new(:15x, :2y), Point2D.new(:20x, :10y),
+    ;
+
+    my $bst = BinarySearchTree[Point2D].new;
+
+    is $bst.is-empty, True, 'BST is empty.';
+
+    $bst.insert($_) for @points;
+
+    cmp-ok $bst.find-min, &[===], @points.sort(+*)[0], 'find correct minimum value.';
+
+    cmp-ok $bst.find-max, &[===], @points.sort(+*)[*-1], 'find correct maximum value.';
+
+    subtest 'BST contains the right nodes.', {
+        for @points {
+            is $bst.contains($_), True, "BST contains node with value {$_.gist}."
+        }
+    }
+
+    for @points {
         $bst.remove($_) if $bst.contains($_)
     }
 

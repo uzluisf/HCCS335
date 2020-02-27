@@ -8,9 +8,6 @@ my role BinaryNode[::T] {
 
 has BinaryNode $!root;
 
-my subset LessThan of Code where { .returns ~~ Bool && .arity == 2 };
-has LessThan $.less-than is required("Provide code object to compare items.");
-
 =comment PUBLIC METHODS
 
 #| Find smallest item in the BST.
@@ -35,6 +32,7 @@ method is-empty( BinarySearchTree:D: --> Bool ) {
 
 #| Insert item $x into the BST.
 method insert( BinarySearchTree:D: T $x --> Nil ) {
+    #die "Please implement the Real method 
     self!rec-insert($x, $!root)
 }
 
@@ -64,10 +62,10 @@ method !iter-find-max( BinaryNode $node is copy --> BinaryNode ) {
 method !rec-contains( T $x, BinaryNode $node is rw --> Bool ) {
     return False unless $node.defined;
 
-    if $!less-than($x, $node.item) {
+    if $x < $node.item {
         self!rec-contains($x, $node.left)
     }
-    elsif $!less-than($node.item, $x) {
+    elsif $node.item < $x {
         self!rec-contains($x, $node.right)
     }
     else {
@@ -79,10 +77,10 @@ method !rec-insert( T $x, BinaryNode $node is rw --> Nil ) {
     if !$node.defined {
         $node = BinaryNode[$(T)].new(item => $x);
     }
-    elsif $!less-than($x, $node.item) {
+    elsif $x < $node.item {
         self!rec-insert($x, $node.left)
     }
-    elsif $!less-than($node.item, $x) {
+    elsif $node.item < $x {
         self!rec-insert($x, $node.right)
     }
     else {
@@ -94,11 +92,11 @@ method !rec-remove( T $x, BinaryNode $node is rw --> Nil ) {
     return unless $node.defined;
 
     # go left
-    if $!less-than($x, $node.item) {
+    if $x < $node.item {
         self!rec-remove($x, $node.left)
     }
     # go right
-    elsif $!less-than($node.item, $x) {
+    elsif $node.item < $x {
         self!rec-remove($x, $node.right)
     }
     # node with two children
