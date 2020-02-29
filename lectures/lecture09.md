@@ -120,7 +120,7 @@ it. As mentioned above, there are several methods for dealing with
 this. However, the most simple ones are *separate chaining* and *open
 addressing*.
 
-### Separate chaining
+### Closed addressing (Separate chaining)
 
 This approach of resolving collisions is to build, for each of the $M$
 array indices, a linked list of the key-value pairs whose keys hash to
@@ -145,6 +145,8 @@ chained together.
 **Implementation:** [implementations/HashTable.h](https://github.com/uzluisf/HCCS335/blob/master/implementations/cpp/lib/HashTable.h)
 
 #### Class interface for separate chaining hash table
+
+---
 
 ```cpp
 template<typename HashedObj>
@@ -236,4 +238,3 @@ expected (in other words, let $\lambda \approx 1$).
   function to **rehash**.
 * It's a good idea to keep the table size prome to ensure good
   distribution of the keys.
-  
