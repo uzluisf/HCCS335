@@ -1,9 +1,14 @@
-unit role HashTable[::T];
-
 use Adverb::Eject;
 
-has $.hash is required where { .arity == 1 && .returns ~~ Int };
+# Hash table implementation using separated chaining for collision resolution.
+unit role HashTable[::T];
 
+# hash function
+has $.hash is required("Provide a hash function")
+           where { .arity == 1 && .returns ~~ Int };
+
+# Inserted items that hash to the same key are chained together
+# (i.e., they're placed in the same array).
 has Array $!lists = Array[Array].new(shape => 19);
 has Int   $!num-of-items;
 
@@ -12,17 +17,17 @@ method contains( T $x --> Bool ) {
 }
 
 method make-empty( --> Nil ) {
-    $!list = Empty; 
+    $!lists = Empty; 
 }
 
 method insert( T $x --> Bool ) {
+    # no need to insert item if already in the table.
     if $!lists[ self!hashify($x) ] {
         return False if $x ∈ $!lists[ self!hashify($x) ]
     }
 
     $!lists[ self!hashify($x) ].push($x);
-
-    self!rehash if (++$!num-of-elements > @!lists.elems);
+    self!rehash if (++$!num-of-items > $!lists.elems);
     return True;
 }
 
@@ -50,7 +55,7 @@ method !hashify( T $x --> Int ) {
 }
 
 method !rehash {
-    sub next-prime(UInt $n is copy) {
+    sub next-prime( UInt $n is copy --> UInt ) {
         $n++ if $n %% 2;
         $n += 2 until $n.is-prime;
         return $n
@@ -60,7 +65,7 @@ method !rehash {
 
     # create new double-sized, empty table.
     $!lists = Empty;
-    $!lists = Array[Array].new(shape => next-prime 2 * $!lists.elems);
+    $!lists = Array[Array].new(shape => next-prime(2 * $!lists.elems));
 
     # copy old table into new table.
     $!num-of-items = 0;
@@ -70,3 +75,4 @@ method !rehash {
         }
     }
 }
+

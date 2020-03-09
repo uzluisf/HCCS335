@@ -1,0 +1,11 @@
+use Test;
+use HashTable;
+
+my $ht = HashTable[Str].new(
+    hash => sub (Str $x --> Int:D) { return $x.chars }
+);
+
+
+$ht.insert("Hello");
+say $ht.contains("Hello");
+

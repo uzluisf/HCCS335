@@ -12,3 +12,5 @@ Lecture notes for CS335 (Software Design and Analysis III).
 * [L7: Splay trees, and B-trees](./lectures/lecture07.md)
 * [L8: Sets and maps](./lectures/lecture08.md)
 * [L9: Hashing](./lectures/lecture09.md)
+* [L10: Hashing (cont.)](./lectures/lecture10.md)
+* [L11: Hashing (cont.)](./lectures/lecture11.md)
