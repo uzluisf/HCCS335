@@ -14,3 +14,7 @@ Lecture notes for CS335 (Software Design and Analysis III).
 * [L9: Hashing](./lectures/lecture09.md)
 * [L10: Hashing (cont.)](./lectures/lecture10.md)
 * [L11: Hashing (cont.)](./lectures/lecture11.md)
+
+---
+
+* [L12: Heaps](./lectures/lecture12.md)
