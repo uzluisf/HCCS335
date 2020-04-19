@@ -11,10 +11,10 @@
 /*
 Function object template for the hash function.
 */
-template<typename Key>
+template<typename T>
 class hash {
     public:
-        size_t operator()( const Key& k) const;
+        size_t operator()( const T& k) const;
 };
 
 /*
@@ -25,7 +25,8 @@ class hash<std::string> {
     public:
         size_t operator()( const std::string& key ) {
             size_t hashVal = 0;
-            for( char ch : key ) hashVal = 37 * hashVal + ch;
+            for (char ch : key)
+                hashVal = 37 * hashVal + ch;
             return hashVal;
         }
 };

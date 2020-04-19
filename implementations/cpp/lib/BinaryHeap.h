@@ -44,7 +44,7 @@ class BinaryHeap {
 
 template<typename Comparable>
 BinaryHeap<Comparable>::BinaryHeap( int capacity ) 
-    : _array{ capacity + 1 }, _currentSize{ 0 }
+    : _array( capacity + 1 ), _currentSize{ 0 }
 { }
 
 

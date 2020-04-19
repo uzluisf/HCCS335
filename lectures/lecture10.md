@@ -77,6 +77,22 @@ choice is $f(i) = i^2$.
 
 ![Quadratic probing](images/hash-table-quadratic-probing.png "quadratic probing")
 
+* `insert(89)`
+  * $h_{0}(89) = ((89 + 0^{2}) \text{ mod } 10) = 9$. Cell $9$ unoccupied so insert $89$.
+* `insert(18)`
+  * $h_{0}(18) = ((18 + 0^{2}) \text{ mod } 10) = 8$. Cell $8$ unoccupied so insert $18$.
+* `insert(49)`
+  * $h_{0}(49) = ((49 + 0^{2}) \text{ mod } 10) = 9$. Cell $9$ occupied.
+  * $h_{1}(49) = ((49 + 1^{2}) \text{ mod } 10) = 0$. Cell $0$ unoccupied so insert $49$.
+* `insert(58)`
+  * $h_{0}(58) = ((58 + 0^{2}) \text{ mod } 10) = 8$. Cell $8$ occupied.
+  * $h_{1}(58) = ((58 + 1^{2}) \text{ mod } 10) = 9$. Cell $9$ occupied.
+  * $h_{2}(58) = ((58 + 2^{2}) \text{ mod } 10) = 2$. Cell $2$ unoccupied so insert $58$.
+* `insert(69)`
+  * $h_{0}(69) = ((69 + 0^{2}) \text{ mod } 10) = 9$. Cell $9$ occupied.
+  * $h_{1}(69) = ((69 + 1^{2}) \text{ mod } 10) = 0$. Cell $0$ occupied.
+  * $h_{2}(69) = ((69 + 2^{2}) \text{ mod } 10) = 3$. Cell $3$ unoccupied so insert $69$.
+
 For linear probing, it is a bad idea to let the hash table get nearly
 full, because per- formance degrades. For quadratic probing, the
 situation is even more drastic: There is no guarantee of ﬁnding an

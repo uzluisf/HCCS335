@@ -8,10 +8,11 @@
 
 // Test program
 int main() {
-    int minItem = 10000;  // same number of digits
+    int minItem = 10000;
     int maxItem = 99999;
 
-    BinaryHeap<std::string> h;
+    BinaryHeap<std::string> h{};
+
     std::string str = "hello";
     int i = 37;
     std::string x;
@@ -23,20 +24,24 @@ int main() {
         sout << "hello" << i;
         if (i >= minItem) {
             std::string s = sout.str( );
+            //std::cout << s << "\n";
             h.insert( s );
         }
     }
+
     for (i = minItem; i < maxItem; ++i) {
         std::ostringstream sout;
         sout << "hello" << i;
         
-        h.deleteMin( x );
+        std::cout << x << "\n";
+        h.deleteMin(x);
 
         if (x != sout.str())
             std::cout << "Oops! " << i << std::endl;
     }
 
     std::cout << "End test... no other output is good" << std::endl;
+
     return 0;
 }
 
