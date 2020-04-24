@@ -21,3 +21,5 @@ Lecture notes for CS335 (Software Design and Analysis III).
 * [L13: Heaps (cont.)](./lectures/lecture13.md)
 * [L14: Priority Queues(Binomial Queues) and Sorting](./lectures/lecture14.md)
 * [L15: Sorting (cont.)](./lectures/lecture15.md)
+* [L16: The disjoint sets class](./lectures/lecture16.md)
+* [L17: Graph algorithms](./lectures/lecture17.md)
