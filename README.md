@@ -23,3 +23,4 @@ Lecture notes for CS335 (Software Design and Analysis III).
 * [L15: Sorting (cont.)](./lectures/lecture15.md)
 * [L16: The disjoint sets class](./lectures/lecture16.md)
 * [L17: Graph algorithms](./lectures/lecture17.md)
+* [L17: Graph algorithms (cont.)](./lectures/lecture18.md)
