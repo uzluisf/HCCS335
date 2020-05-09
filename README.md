@@ -1,7 +1,7 @@
 
 Lecture notes for CS335 (Software Design and Analysis III).
 
-[Download latest PDF](https://github.com/uzluisf/HCCS335/raw/master/PDF/output.pdf)
+[Download latest PDF](https://github.com/uzluisf/HCCS335/raw/master/PDF/hccs335-notes.pdf)
 
 * [L1: C++ Basics](./lectures/lecture01.md)
 * [L2: C++ Basics (cont.)](./lectures/lecture02.md)
@@ -23,4 +23,8 @@ Lecture notes for CS335 (Software Design and Analysis III).
 * [L15: Sorting (cont.)](./lectures/lecture15.md)
 * [L16: The disjoint sets class](./lectures/lecture16.md)
 * [L17: Graph algorithms](./lectures/lecture17.md)
-* [L17: Graph algorithms (cont.)](./lectures/lecture18.md)
+* [L18: Graph algorithms (cont.)](./lectures/lecture18.md)
+* [L19: Graph algorithms (cont.)](./lectures/lecture19.md)
+* [L20: Graph algorithms (cont.)](./lectures/lecture20.md)
+* [L21: Introduction to NP-completeness](./lectures/lecture21.md)
+* [L22: Greedy algorithms (cont.)](./lectures/lecture22.md)
